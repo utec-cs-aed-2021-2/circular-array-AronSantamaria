@@ -1,75 +1,139 @@
 #include <iostream>
-using namespace std;
+#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <deque>
+#include <chrono>
+#include <math.h>
+#include <fstream>
 
-template <class T>
-class CircularArray
-{
+template <typename S>
+void resize(S *&old_array, int* old_capacity, int* new_capacity, int size){
+    S* new_array = new S[*new_capacity];
+    for (int i = 0; i < size; ++i) {
+        new_array[i] = old_array[i];
+    }
+    *old_array = *new_array;
+
+}
+
+template <typename T>
+class CircularArray{
 private:
-    T *array;
-    int capacity;
-    int back, front;
-    
+    int capacity = 1;
+    T* array = new T[capacity];
+    int size = 0;
+    int index = 0;
 public:
-    CircularArray();
-    CircularArray(int _capacity);
-    virtual ~CircularArray();
-    void push_front(T data);
-    void push_back(T data);
-    void insert(T data, int pos);
-    T pop_front();
-    T pop_back();
-    bool is_full();
-    bool is_empty();
-    int size();
-    void clear();
-    T &operator[](int);
-    void sort();
-    bool is_sorted();
-    void reverse();
-    string to_string(string sep=" ");
+    CircularArray(int _capacity){
+        resize(array,&capacity, &_capacity, size);
+        capacity = _capacity;
+    }
+    void push_back(int _value){
+        array[index] = _value;
+        if (index == capacity - 1){
+            resize(array,&capacity, &capacity+1, size);
+            capacity = capacity+1;
+            index = 0;
+        }else{
+            index+=1;size+=1;
+        }
+    }
+    void push_front(int _value){
+        for (int i = size-1; i >= 0; i--) {
+            array[i+1] = array[i];
+        }
+        array[0] = _value;index+=1;size+=1;
+    }
+    void pop_back(){
+        index-=1;size-=1;
+    }
+    void pop_front(){
+        for (int i = 0; i < size; ++i) {
+            array[i] = array[i+1];}
+        index-=1;size-=1;
+    }
+    void reverse(){
+        T* new_array = new T[capacity];
+        int counter = 0;
+        for (int i = size-1; i >= 0; i--) {
+            new_array[counter] = array[i]; counter+=1;
+        }
+        delete[] array;
+        array = new_array;
+    }
+    void QuickSort(int mini, int maxi ){
+        int y, z, pivote, aux, start=0;
+        y = mini;
+        z = maxi;
 
-private:
-    int next(int);
-    int prev(int);
+        pivote = array[(mini + maxi) / 2 ];
+        do{
+            while((array[y] < pivote) && (z <= maxi) ){
+                y++;
+            }
+            while((pivote < array[z]) && (z > mini) ){
+                z--;
+            }
+            if(y <= z ){
+                aux = array[y];
+                array[y] = array[z];
+                array[z] = aux;
+                y++;
+                z--;
+            }
+        }while(y <= z);
+
+        if(mini < z ){
+            QuickSort(mini, z);
+        }
+        if(y < maxi ){
+            QuickSort(y, maxi);
+        }
+    }
+    void sort(){
+        //cout<<"This: "<<capacity<<", Size: "<<size<<endl;
+        QuickSort(0, size-1);
+    }
+    bool is_full(){
+        return capacity != size;
+    }
+    bool is_empty(){
+        return size != 0;
+    }
+    bool is_sorted(){
+        auto min_referencial = array[0];
+        for (int i = 0; i < size; ++i) {
+            //cout<<"Compare: "<<array[i]<<", with: "<<min_referencial<<endl;
+            if (array[i] < min_referencial){
+                return false;
+            }
+            min_referencial = array[i];
+        }
+        return true;
+    }
+    void to_string(){
+        for (int i = 0; i < size; ++i) {
+            cout<< array[i]<<" ";
+        }
+        cout<<endl;
+    }
 };
+namespace utec{
+    template <typename K>
+    class stack : public CircularArray<K>{
+    public:
 
-template <class T>
-CircularArray<T>::CircularArray()
-{
-    CircularArray(0);
-}
+        stack(int _capacity) : CircularArray<K>(_capacity){
+        }
+    };
 
-template <class T>
-CircularArray<T>::CircularArray(int _capacity)
-{
-    this->array = new T[_capacity];
-    this->capacity = _capacity;
-    this->front = this->back = -1;
-}
+    template <typename P>
+    class queue : public CircularArray<P>{
+    public:
 
-template <class T>
-CircularArray<T>::~CircularArray()
-{
-    delete[] array;
-}
-
-template <class T>
-int CircularArray<T>::prev(int index)
-{
-    return (index == 0) ? capacity - 1 : index - 1;
-}
-
-template <class T>
-int CircularArray<T>::next(int index)
-{
-    return (index + 1) % capacity;
-}
-
-template <class T>
-string CircularArray<T>::to_string(string sep)
-{
-    string result = ""; 
-    for (int i = 0; i < size(); i++)
-        result += std::to_string((*this)[i]) + sep;
-    return result;    
+        queue(int _capacity) : CircularArray<P>(_capacity){
+        }
+    };
 }
