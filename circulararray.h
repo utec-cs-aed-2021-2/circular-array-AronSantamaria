@@ -7,6 +7,9 @@
 #include <chrono>
 #include <math.h>
 #include <fstream>
+#include <string>
+
+using namespace std;
 
 template <typename S>
 void resize(S *&old_array, int* old_capacity, int* new_capacity, int size){
@@ -97,10 +100,20 @@ public:
         QuickSort(0, size-1);
     }
     bool is_full(){
-        return capacity != size;
+        if (capacity == size){
+            return true;
+        }else{
+            return false;
+        }
+
     }
     bool is_empty(){
-        return size != 0;
+        if (size == 0){
+            return true;
+        }else{
+            return false;
+        }
+
     }
     bool is_sorted(){
         auto min_referencial = array[0];
@@ -113,11 +126,17 @@ public:
         }
         return true;
     }
-    void to_string(){
+    string to_string(){
+        string res;
+        int it = *&array[0];
+
         for (int i = 0; i < size; ++i) {
-            cout<< array[i]<<" ";
+            it = *&array[i];
+            res = res + std::__cxx11::to_string(it);
+            res = res + " ";
         }
-        cout<<endl;
+
+        return res;
     }
 };
 namespace utec{
