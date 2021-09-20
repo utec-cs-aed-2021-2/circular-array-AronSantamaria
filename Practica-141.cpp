@@ -1,13 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <deque>
-#include <chrono>
-#include <math.h>
-#include <fstream>
-#include <string>
 
 using namespace std;
 
@@ -100,20 +90,10 @@ public:
         QuickSort(0, size-1);
     }
     bool is_full(){
-        if (capacity == size){
-            return true;
-        }else{
-            return false;
-        }
-
+        return capacity != size;
     }
     bool is_empty(){
-        if (size == 0){
-            return true;
-        }else{
-            return false;
-        }
-
+        return size != 0;
     }
     bool is_sorted(){
         auto min_referencial = array[0];
@@ -126,17 +106,11 @@ public:
         }
         return true;
     }
-    string to_string(){
-        string res;
-        int it = *&array[0];
-
+    void to_string(){
         for (int i = 0; i < size; ++i) {
-            it = *&array[i];
-            res = res + std::__cxx11::to_string(it);
-            res = res + " ";
+            cout<< array[i]<<" ";
         }
-
-        return res;
+        cout<<endl;
     }
 };
 namespace utec{
@@ -155,4 +129,53 @@ namespace utec{
         queue(int _capacity) : CircularArray<P>(_capacity){
         }
     };
+}
+
+int main(){
+
+    CircularArray<int>* array = new CircularArray<int>(7);
+    cout<< boolalpha << array->is_empty() <<endl;
+    array->push_back(6);
+    array->push_back(3);
+    array->push_back(7);
+    array->push_back(8);
+    array->push_back(1);
+    cout<< boolalpha << array->is_empty() <<endl;
+    cout<< boolalpha << array->is_full() <<endl;
+    array->pop_front();
+    array->pop_back();
+    array->push_front(10);
+    array->push_front(2);
+    array->push_front(15);
+    array->push_front(4);
+    array->to_string();
+    cout<<boolalpha<<array->is_full()<<endl;
+    cout<<boolalpha<<array->is_sorted()<<endl;
+    array->sort();
+    array->to_string();
+    array->reverse();
+    array->to_string();
+
+    delete array;
+
+    //MOSTRANDO LAS CLASES QUEUE Y STACK HEREDADAS DE CIRCULAR ARRAY
+    utec::queue<int>* queue = new utec::queue<int>(7);
+    queue->push_back(6);
+    queue->push_back(3);
+    queue->push_back(7);
+    queue->push_back(8);
+    queue->push_back(1);
+    queue->push_back(2);
+
+    utec::stack<int>* stack = new utec::stack<int>(7);
+    stack->push_back(6);
+    stack->push_back(3);
+    stack->push_back(7);
+    stack->push_back(8);
+    stack->push_back(1);
+    stack->push_back(2);
+
+    delete queue;
+    delete stack;
+    return 0;
 }
